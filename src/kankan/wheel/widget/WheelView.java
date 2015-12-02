@@ -24,6 +24,7 @@ import java.util.List;
 
 import kankan.wheel.R;
 import kankan.wheel.widget.adapters.WheelViewAdapter;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -42,11 +43,11 @@ import android.widget.LinearLayout;
  * 
  * @author Yuri Kanivets
  */
+@SuppressWarnings("deprecation")
 public class WheelView extends View {
 
 	/** Top and bottom shadows colors */
-	private int[] SHADOWS_COLORS = new int[] { 0xFF111111,
-			0x00AAAAAA, 0x00AAAAAA };
+	private int[] SHADOWS_COLORS = new int[] { 0xFF111111, 0x00AAAAAA, 0x00AAAAAA };
 
 	/** Top and bottom items offset (to hide that) */
 	private static final int ITEM_OFFSET_PERCENT = 0;
@@ -196,9 +197,7 @@ public class WheelView extends View {
 	}
 
 	/**
-	 * Sets the desired count of visible items.
-	 * Actual amount of visible items depends on wheel layout parameters.
-	 * To apply changes and rebuild view call measure().
+	 * Sets the desired count of visible items. Actual amount of visible items depends on wheel layout parameters. To apply changes and rebuild view call measure().
 	 * 
 	 * @param count the desired count for visible items
 	 */
@@ -228,8 +227,7 @@ public class WheelView extends View {
 	};
 
 	/**
-	 * Sets view adapter. Usually new adapters contain different views, so
-	 * it needs to rebuild view by calling measure().
+	 * Sets view adapter. Usually new adapters contain different views, so it needs to rebuild view by calling measure().
 	 * 
 	 * @param viewAdapter the view adapter
 	 */
@@ -358,7 +356,7 @@ public class WheelView extends View {
 					index += itemCount;
 				}
 				index %= itemCount;
-			} else{
+			} else {
 				return; // throw?
 			}
 		}
@@ -434,7 +432,7 @@ public class WheelView extends View {
 	 * @param end
 	 */
 	public void setShadowColor(int start, int middle, int end) {
-		SHADOWS_COLORS = new int[] {start, middle, end};
+		SHADOWS_COLORS = new int[] { start, middle, end };
 	}
 
 	/**
@@ -496,8 +494,7 @@ public class WheelView extends View {
 	/**
 	 * Calculates desired height for layout
 	 * 
-	 * @param layout
-	 *            the source layout
+	 * @param layout the source layout
 	 * @return the desired layout height
 	 */
 	private int getDesiredHeight(LinearLayout layout) {
@@ -538,8 +535,7 @@ public class WheelView extends View {
 
 		// TODO: make it static
 		itemsLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		itemsLayout.measure(MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.UNSPECIFIED),
-				MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+		itemsLayout.measure(MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 		int width = itemsLayout.getMeasuredWidth();
 
 		if (mode == MeasureSpec.EXACTLY) {
@@ -555,8 +551,7 @@ public class WheelView extends View {
 			}
 		}
 
-		itemsLayout.measure(MeasureSpec.makeMeasureSpec(width - 2 * PADDING, MeasureSpec.EXACTLY),
-				MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+		itemsLayout.measure(MeasureSpec.makeMeasureSpec(width - 2 * PADDING, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
 		return width;
 	}
@@ -621,7 +616,7 @@ public class WheelView extends View {
 	 * @param canvas the canvas for drawing
 	 */
 	private void drawShadows(Canvas canvas) {
-		int height = (int)(1.5 * getItemHeight());
+		int height = (int) (1.5 * getItemHeight());
 		topShadow.setBounds(0, 0, getWidth(), height);
 		topShadow.draw(canvas);
 
@@ -637,7 +632,7 @@ public class WheelView extends View {
 		canvas.save();
 
 		int top = (currentItem - firstItem) * getItemHeight() + (getItemHeight() - getHeight()) / 2;
-		canvas.translate(PADDING, - top + scrollingOffset);
+		canvas.translate(PADDING, -top + scrollingOffset);
 
 		itemsLayout.draw(canvas);
 
@@ -656,32 +651,33 @@ public class WheelView extends View {
 	}
 
 	@Override
+	@SuppressLint("ClickableViewAccessibility")
 	public boolean onTouchEvent(MotionEvent event) {
 		if (!isEnabled() || getViewAdapter() == null) {
 			return true;
 		}
 
 		switch (event.getAction()) {
-			case MotionEvent.ACTION_MOVE:
-				if (getParent() != null) {
-					getParent().requestDisallowInterceptTouchEvent(true);
-				}
-				break;
+		case MotionEvent.ACTION_MOVE:
+			if (getParent() != null) {
+				getParent().requestDisallowInterceptTouchEvent(true);
+			}
+			break;
 
-			case MotionEvent.ACTION_UP:
-				if (!isScrollingPerformed) {
-					int distance = (int) event.getY() - getHeight() / 2;
-					if (distance > 0) {
-						distance += getItemHeight() / 2;
-					} else {
-						distance -= getItemHeight() / 2;
-					}
-					int items = distance / getItemHeight();
-					if (items != 0 && isValidItemIndex(currentItem + items)) {
-						notifyClickListenersAboutClick(currentItem + items);
-					}
+		case MotionEvent.ACTION_UP:
+			if (!isScrollingPerformed) {
+				int distance = (int) event.getY() - getHeight() / 2;
+				if (distance > 0) {
+					distance += getItemHeight() / 2;
+				} else {
+					distance -= getItemHeight() / 2;
 				}
-				break;
+				int items = distance / getItemHeight();
+				if (items != 0 && isValidItemIndex(currentItem + items)) {
+					notifyClickListenersAboutClick(currentItem + items);
+				}
+			}
+			break;
 		}
 
 		return scroller.onTouchEvent(event);
@@ -899,8 +895,7 @@ public class WheelView extends View {
 	 * @return true if item index is not out of bounds or the wheel is cyclic
 	 */
 	private boolean isValidItemIndex(int index) {
-		return viewAdapter != null && viewAdapter.getItemsCount() > 0 &&
-				(isCyclic || index >= 0 && index < viewAdapter.getItemsCount());
+		return viewAdapter != null && viewAdapter.getItemsCount() > 0 && (isCyclic || index >= 0 && index < viewAdapter.getItemsCount());
 	}
 
 	/**
